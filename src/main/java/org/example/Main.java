@@ -24,6 +24,9 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
-        client.zipAllRemoteFile(fileNames);
+        //client.zipAllRemoteFile(fileNames);
+        //client.uploadAllZipedFile(fileNames);
+        //client.deleteAllEvilFiles(fileNames);
+        //client.checkIfFilesExists(fileNames);
     }
 }

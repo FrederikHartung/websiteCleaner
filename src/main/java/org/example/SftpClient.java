@@ -50,6 +50,7 @@ public class SftpClient {
         } catch (SftpException e) {
             throw new RuntimeException(e);
         }
+        System.out.println("compressing of all files finished");
         exit();
     }
 
@@ -111,40 +112,66 @@ public class SftpClient {
 
     public void checkIfFilesExists(List<String> fileNames){
         this.connect();
+        int steps = fileNames.size();
+        int counter_step = 0;
 
         int anzahlVorhanden = 0;
         for(String s : fileNames){
+            counter_step++;
+            System.out.println("step " + counter_step + "/" + steps);
             if(this.checkIfFileExists(s)){
                 anzahlVorhanden++;
                 System.out.println("Anzahl vorhanden: " + anzahlVorhanden);
             }
         }
+        System.out.println("finished checking, Anzahl vorhanden: " + anzahlVorhanden);
 
         this.exit();
     }
 
-    public void uploadDummyFile(){
+    public void uploadAllZipedFile(List<String> fileNames){
         connect();
-        try {
-            channel.put(LOCAL_PICTURE_PATH + FILENAME, REMOTE_PICTURE_PATH + FILENAME);
-        } catch (SftpException e) {
-            throw new RuntimeException(e);
+        int steps = fileNames.size();
+        int counter_step = 0;
+        int counter_successful = 0;
+        for(String fileName : fileNames){
+            try {
+                if(fileName.contains("/")){
+                    fileName = fileName.replace("/", "_tTt_");
+                }
+                counter_step++;
+                System.out.println("uploading file " + counter_step + "/" + steps);
+                String gzipFile = LOCAL_PATH_GZIP_TEMP_FOLDER + fileName + ".gz";
+                if(fileName.contains("_tTt_")){
+                    fileName = fileName.replace("_tTt_", "/");
+                }
+                String remoteFileName = fileName + ".gz";
+                channel.put(gzipFile, remoteFileName);
+                counter_successful++;
+            } catch (SftpException e) {
+                System.out.println("error uploading file " + fileName + ", cause: " + e.getMessage());
+            }
         }
-        System.out.println("uploaded file successfull");
+        System.out.println("successful: " + counter_successful);
+        System.out.println("uploaded all zipped files finished");
         exit();
     }
 
-    public boolean deleteFile(String path){
+    public void deleteAllEvilFiles(List<String> fileNames){
         connect();
-        try {
-            channel.rm(path);
-        } catch (SftpException e) {
-            System.out.println("error removing file: " + path);
-            return false;
+        int steps = fileNames.size();
+        int counter_steps = 0;
+        for(String fileName:fileNames){
+            try {
+                counter_steps++;
+                System.out.println("deleting evil files " + counter_steps + "/" + steps);
+                channel.rm(fileName);
+            } catch (SftpException e) {
+                System.out.println("error removing file: " + fileName + ", cause: " + e.getMessage());
+            }
         }
-        System.out.println("removed file successfully: " + path);
+        System.out.println("finished removing evil files");
         exit();
-        return true;
     }
 
     public void connect(){
