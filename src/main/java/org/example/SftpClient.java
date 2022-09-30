@@ -35,12 +35,17 @@ public class SftpClient {
         return (ChannelSftp) jschSession.openChannel("sftp");
     }
 
-    public void zipRemoteFile(List<String> filePaths){
+    public void zipAllRemoteFile(List<String> filePaths){
         connect();
         try {
             for(String filePath : filePaths){
-                InputStream stream = channel.get(filePath);
-                compressGzipFile(stream, filePath);
+                if(checkIfFileExists(filePath)){
+                    InputStream stream = channel.get(filePath);
+                    compressGzipFile(stream, filePath);
+                }
+                else {
+                    System.out.println("file " + filePath + " does not exists on the remote server");
+                }
             }
         } catch (SftpException e) {
             throw new RuntimeException(e);
@@ -73,7 +78,7 @@ public class SftpClient {
         System.out.println("compressing done");
     }
 
-    public void decompressGzipFile(String gzipFile, String newFile) {
+    private void decompressGzipFile(String gzipFile, String newFile) {
         System.out.println("decompressing gzip file " + gzipFile + " to file" + gzipFile + " ...");
         try {
             FileInputStream fis = new FileInputStream(gzipFile);
@@ -94,18 +99,17 @@ public class SftpClient {
     }
 
 
-    public boolean checkIfFileExists(String filePath){
+    private boolean checkIfFileExists(String filePath){
         try{
             channel.ls(filePath);
+            return true;
         }
         catch (SftpException ex){
             return false;
         }
-
-        return true;
     }
 
-    public void checkIfFileSExists(List<String> fileNames){
+    public void checkIfFilesExists(List<String> fileNames){
         this.connect();
 
         int anzahlVorhanden = 0;

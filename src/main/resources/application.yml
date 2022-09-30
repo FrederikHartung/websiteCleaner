@@ -1,3 +1,4 @@
-userName:
-passWord:
-host:
+sftp:
+  userName:
+  passWord:
+  host:

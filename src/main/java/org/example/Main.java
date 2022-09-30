@@ -24,6 +24,6 @@ public class Main {
             System.out.println(e.getMessage());
         }
 
-        //doStuff
+        client.zipAllRemoteFile(fileNames);
     }
 }

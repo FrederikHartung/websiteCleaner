@@ -3,6 +3,7 @@ package org.example;
 import org.apache.commons.configuration.PropertiesConfiguration;
 
 import javax.naming.ConfigurationException;
+import java.util.Iterator;
 
 public class ApplicationConfig {
     private static String userName;
@@ -32,9 +33,9 @@ public class ApplicationConfig {
             }
         }
 
-        userName = (String)config.getProperty("userName");
-        passWord  = (String)config.getProperty("passWord");
-        host = (String)config.getProperty("host");
+        userName = config.getString("userName");
+        passWord  = config.getString("passWord");
+        host = config.getString("host");
 
         if(userName == null || passWord == null || host == null) {
             throw new ConfigurationException("error: missing value for host, username or password in config file");
