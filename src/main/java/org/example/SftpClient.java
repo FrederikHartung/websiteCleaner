@@ -174,7 +174,7 @@ public class SftpClient {
         exit();
     }
 
-    public void connect(){
+    private void connect(){
         try {
             channel.connect();
         } catch (JSchException e) {
@@ -182,7 +182,7 @@ public class SftpClient {
         }
     }
 
-    public void exit(){
+    private void exit(){
         channel.disconnect();
         try {
             channel.getSession().disconnect();

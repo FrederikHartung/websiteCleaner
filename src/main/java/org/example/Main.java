@@ -27,6 +27,6 @@ public class Main {
         //client.zipAllRemoteFile(fileNames);
         //client.uploadAllZipedFile(fileNames);
         //client.deleteAllEvilFiles(fileNames);
-        //client.checkIfFilesExists(fileNames);
+        client.checkIfFilesExists(fileNames);
     }
 }
