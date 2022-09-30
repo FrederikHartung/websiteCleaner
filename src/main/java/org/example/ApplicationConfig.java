@@ -9,28 +9,34 @@ public class ApplicationConfig {
     private static String passWord;
     private static String host;
 
-    private static final String DEVELOPER_APPLICATION_SETTINGS = "application-private.properties";
-    private static final String APPLICATION_SETTINGS = "application.properties";
+    private static final String DEVELOPER_APPLICATION_SETTINGS = "application-private.yml";
+    private static final String APPLICATION_SETTINGS = "application.yml";
 
     public static void readConfig() throws ConfigurationException{
         PropertiesConfiguration config = new PropertiesConfiguration();
+        boolean configFound = false;
         try {
             config.load(DEVELOPER_APPLICATION_SETTINGS);
+            configFound = true;
+            System.out.println("using " + DEVELOPER_APPLICATION_SETTINGS);
         } catch (org.apache.commons.configuration.ConfigurationException e) {
 
         }
 
-        try {
-            config.load(APPLICATION_SETTINGS);
-        } catch (org.apache.commons.configuration.ConfigurationException e) {
-            throw new ConfigurationException("could not load any application.properties");
+        if(!configFound){
+            try {
+                config.load(APPLICATION_SETTINGS);
+                System.out.println("using " + APPLICATION_SETTINGS);
+            } catch (org.apache.commons.configuration.ConfigurationException e) {
+                throw new ConfigurationException("could not load any application.yml");
+            }
         }
 
-        userName = config.getProperty("userName").toString();
-        passWord = config.getProperty("passWord").toString();
-        host = config.getProperty("host").toString();
+        userName = (String)config.getProperty("userName");
+        passWord  = (String)config.getProperty("passWord");
+        host = (String)config.getProperty("host");
 
-        if(userName.equals("") || passWord.equals("") || host.equals("")) {
+        if(userName == null || passWord == null || host == null) {
             throw new ConfigurationException("error: missing value for host, username or password in config file");
         }
     }

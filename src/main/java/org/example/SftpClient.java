@@ -3,34 +3,34 @@ package org.example;
 import com.jcraft.jsch.*;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class SftpClient {
 
-    private final static String USERNAME = "sftp_user@bmwi-vhp-china.de";
-    private final static String REMOTEHOST = "ssh.strato.de";
-    private final static String PASSWORD = "Thinkport123!?";
+    private final String userName;
+    private final String password;
+    private final String host;
+
     public final static String LOCAL_PICTURE_PATH = "/Users/frederikhartung/Downloads/";
     public final static String REMOTE_PICTURE_PATH = "/";
     public final static String FILENAME = "Cat03.jpeg";
     private final static  String LOCAL_PATH_GZIP_TEMP_FOLDER = "/Users/frederikhartung/Downloads/temp/gzip/";
     private ChannelSftp channel;
 
-    public SftpClient() throws JSchException {
+    public SftpClient(String userName, String password, String host) throws JSchException {
+        this.userName = userName;
+        this.password = password;
+        this.host = host;
         this.channel = setupJsch();
     }
 
     private ChannelSftp setupJsch() throws JSchException {
         JSch jsch = new JSch();
         jsch.setKnownHosts("/Users/frederikhartung/.ssh/known_hosts");
-        Session jschSession = jsch.getSession(USERNAME, REMOTEHOST);
-        jschSession.setPassword(PASSWORD);
-        //jschSession.setConfig("kex", "diffie-hellman-group1-sha1");
+        Session jschSession = jsch.getSession(userName, host);
+        jschSession.setPassword(password);
         jschSession.connect();
         return (ChannelSftp) jschSession.openChannel("sftp");
     }
@@ -47,28 +47,6 @@ public class SftpClient {
         }
         exit();
     }
-
-//    public void zipFile(){
-//        String fileName = "/Users/frederikhartung/Downloads/Cat03.jpeg";
-//        Long MILLS_IN_DAY = 86400000L;
-//
-//        try{
-//            FileInputStream  fis = new FileInputStream(fileName);
-//            BufferedInputStream bis = new BufferedInputStream(fis);
-//            ZipInputStream zis = new ZipInputStream(bis);
-//            ZipEntry ze;
-//
-//            while ((ze = zis.getNextEntry()) != null) {
-//                System.out.println(ze.getName());
-//            }
-//
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-//        catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 
     private void compressGzipFile(InputStream stream, String filePath) {
         if(filePath.contains("/")){
